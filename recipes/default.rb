@@ -1,6 +1,6 @@
 #
 # Author:: Seth Chisamore <schisamo@opscode.com>
-# Cookbook Name:: python
+# Cookbook Name:: vc-python
 # Recipe:: default
 #
 # Copyright 2011, Opscode, Inc.
@@ -18,6 +18,6 @@
 # limitations under the License.
 #
 
-include_recipe "python::#{node['python']['install_method']}"
-include_recipe "python::pip"
-include_recipe "python::virtualenv"
+include_recipe "vc-python::#{node['vc-python']['install_method']}"
+include_recipe "vc-python::pip"
+include_recipe "vc-python::virtualenv"

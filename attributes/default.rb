@@ -1,6 +1,6 @@
 #
 # Author:: Seth Chisamore (<schisamo@opscode.com>)
-# Cookbook Name:: python
+# Cookbook Name:: vc-python
 # Attribute:: default
 #
 # Copyright 2011, Opscode, Inc.
@@ -18,13 +18,13 @@
 # limitations under the License.
 #
 
-default['python']['distribute_install_py_version'] = ''
+default['vc-python']['distribute_install_py_version'] = ''
 
-default['python']['install_method'] = 'package'
+default['vc-python']['install_method'] = 'package'
 
-default['python']['url'] = 'http://www.python.org/ftp/python'
-default['python']['version'] = '2.7.1'
-default['python']['checksum'] = '80e387bcf57eae8ce26726753584fd63e060ec11682d1145af921e85fd612292'
-default['python']['prefix_dir'] = '/usr/local'
+default['vc-python']['url'] = 'http://www.python.org/ftp/python'
+default['vc-python']['version'] = '2.7.1'
+default['vc-python']['checksum'] = '80e387bcf57eae8ce26726753584fd63e060ec11682d1145af921e85fd612292'
+default['vc-python']['prefix_dir'] = '/usr/local'
 
-default['python']['configure_options'] = %W{--prefix=#{python['prefix_dir']}}
+default['vc-python']['configure_options'] = ['--prefix=' + default['vc-python']['prefix_dir']]

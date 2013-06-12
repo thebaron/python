@@ -1,6 +1,6 @@
 #
 # Author:: Seth Chisamore <schisamo@opscode.com>
-# Cookbook Name:: python
+# Cookbook Name:: vc-python
 # Recipe:: pip
 #
 # Copyright 2011, Opscode, Inc.
@@ -28,7 +28,7 @@ remote_file "#{Chef::Config[:file_cache_path]}/distribute_setup.py" do
   not_if "which pip"
 end
 
-use_version = node['python']['distribute_install_py_version']
+use_version = node['vc-python']['distribute_install_py_version']
 
 bash "install-pip" do
   cwd Chef::Config[:file_cache_path]

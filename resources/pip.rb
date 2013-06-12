@@ -1,6 +1,6 @@
 #
 # Author:: Seth Chisamore <schisamo@opscode.com>
-# Cookbook Name:: python
+# Cookbook Name:: vc-python
 # Resource:: pip
 #
 # Copyright:: 2011, Opscode, Inc <legal@opscode.com>
@@ -25,3 +25,4 @@ attribute :version, :default => nil
 attribute :timeout, :default => nil
 attribute :virtualenv, :kind_of => String
 attribute :options, :kind_of => String
+attribute :requirements, :kind_of => String

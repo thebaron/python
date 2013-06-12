@@ -1,6 +1,6 @@
 #
 # Author:: Seth Chisamore <schisamo@opscode.com>
-# Cookbook Name:: python
+# Cookbook Name:: vc-python
 # Resource:: virtualenv
 #
 # Copyright:: 2011, Opscode, Inc <legal@opscode.com>

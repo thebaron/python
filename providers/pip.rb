@@ -1,6 +1,6 @@
 #
 # Author:: Seth Chisamore <schisamo@opscode.com>
-# Cookbook Name:: python
+# Cookbook Name:: vc-python
 # Provider:: pip
 #
 # Copyright:: 2011, Opscode, Inc <legal@opscode.com>
@@ -27,13 +27,6 @@ include Chef::Mixin::ShellOut
 # refactoring into core chef easy
 
 action :install do
-  # If we specified a version, and it's not the current version, move to the specified version
-  if @new_resource.version != nil && @new_resource.version != @current_resource.version
-    install_version = @new_resource.version
-  # If it's not installed at all, install it
-  elsif @current_resource.version == nil
-    install_version = candidate_version
-  end
 
   # Set the timeout (units in seconds)
   timeout = 900
@@ -41,9 +34,25 @@ action :install do
     timeout = @new_resource.timeout
   end
   
-  if install_version
-    Chef::Log.info("Installing #{@new_resource} version #{install_version}")
-    status = install_package(@new_resource.package_name, install_version, timeout)
+  # support requirements file
+  if @new_resource.requirements
+    Chef::Log.info("Installing #{@new_resource} from #{@new_resource.requirements}")
+    status = install_from_requirements(@new_resource.requirements, timeout)
+  else
+
+    # If we specified a version, and it's not the current version, move to the specified version
+    if @new_resource.version != nil && @new_resource.version != @current_resource.version
+      install_version = @new_resource.version
+    # If it's not installed at all, install it
+    elsif @current_resource.version == nil
+      install_version = candidate_version
+    end
+
+    if install_version
+      Chef::Log.info("Installing #{@new_resource} version #{install_version}")
+      status = install_package(@new_resource.package_name, install_version, timeout)
+    end
+
     if status
       @new_resource.updated_by_last_action(true)
     end
@@ -103,7 +112,7 @@ end
 # so refactoring into core Chef should be easy
 
 def load_current_resource
-  @current_resource = Chef::Resource::PythonPip.new(@new_resource.name)
+  @current_resource = Chef::Resource::VcPythonPip.new(@new_resource.name)
   @current_resource.package_name(@new_resource.package_name)
   @current_resource.version(nil)
   
@@ -115,10 +124,14 @@ def load_current_resource
 end
 
 def current_installed_version
+  if @new_resource.requirements
+    return "N/A"
+  end
+
   @current_installed_version ||= begin
     delimeter = /==/
     
-    version_check_cmd = "pip freeze#{expand_virtualenv(can_haz_virtualenv(@new_resource))} | grep -i #{@new_resource.package_name}=="
+    version_check_cmd = "#{expand_virtualenv(can_haz_virtualenv(@new_resource))}pip freeze | grep -i #{@new_resource.package_name}=="
     # incase you upgrade pip with pip!
     if @new_resource.package_name.eql?('pip')
       delimeter = /\s/
@@ -139,22 +152,27 @@ def candidate_version
   end
 end
 
+def install_from_requirements(requirements_file, timeout) 
+  shell_out!("#{expand_virtualenv(can_haz_virtualenv(@new_resource))}pip install -r #{requirements_file}", :timeout => timeout)
+end
+
 def install_package(name, version, timeout)
   v = "==#{version}" unless version.eql?('latest')
-  shell_out!("pip install#{expand_options(@new_resource.options)}#{expand_virtualenv(can_haz_virtualenv(@new_resource))} #{name}#{v}", :timeout => timeout)
+  shell_out!("#{expand_virtualenv(can_haz_virtualenv(@new_resource))}pip install#{expand_options(@new_resource.options)} #{name}#{v}", :timeout => timeout)
 end
 
 def upgrade_package(name, version, timeout)
   v = "==#{version}" unless version.eql?('latest')
-  shell_out!("pip install --upgrade#{expand_options(@new_resource.options)}#{expand_virtualenv(can_haz_virtualenv(@new_resource))} #{@new_resource.name}#{v}", :timeout => timeout)
+  shell_out!("#{expand_virtualenv(can_haz_virtualenv(@new_resource))}pip install --upgrade#{expand_options(@new_resource.options)} #{@new_resource.name}#{v}", :timeout => timeout)
 end
 
 def remove_package(name, version, timeout)
-  shell_out!("pip uninstall -y#{expand_options(@new_resource.options)}#{expand_virtualenv(can_haz_virtualenv(@new_resource))} #{@new_resource.name}", :timeout => timeout)
+  shell_out!("#{expand_virtualenv(can_haz_virtualenv(@new_resource))}pip uninstall -y#{expand_options(@new_resource.options)} #{@new_resource.name}", :timeout => timeout)
 end
 
 def expand_virtualenv(virtualenv)
-  virtualenv && " --environment=#{virtualenv}"
+  # virtualenv && "virtualenv #{virtualenv} && #{virtualenv}/bin/"
+  virtualenv && "#{virtualenv}/bin/"
 end
 
 # TODO remove when provider is moved into Chef core

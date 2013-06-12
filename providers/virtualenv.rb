@@ -1,6 +1,6 @@
 #
 # Author:: Seth Chisamore <schisamo@opscode.com>
-# Cookbook Name:: python
+# Cookbook Name:: vc-python
 # Provider:: virtualenv
 #
 # Copyright:: 2011, Opscode, Inc <legal@opscode.com>
@@ -42,7 +42,7 @@ action :delete do
 end
 
 def load_current_resource
-  @current_resource = Chef::Resource::PythonVirtualenv.new(@new_resource.name)
+  @current_resource = Chef::Resource::VcPythonVirtualenv.new(@new_resource.name)
   @current_resource.path(@new_resource.path)
   
   if exists?

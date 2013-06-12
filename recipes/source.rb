@@ -1,6 +1,6 @@
 #
 # Author:: Seth Chisamore <schisamo@opscode.com>
-# Cookbook Name:: python
+# Cookbook Name:: vc-python
 # Recipe:: source
 #
 # Copyright 2011, Opscode, Inc.
@@ -18,7 +18,7 @@
 # limitations under the License.
 #
 
-configure_options = node['python']['configure_options'].join(" ")
+configure_options = node['vc-python']['configure_options'].join(" ")
 
 packages = value_for_platform(
     ["centos","redhat","fedora"] => 
@@ -31,12 +31,12 @@ packages.each do |dev_pkg|
   package dev_pkg
 end
 
-version = node['python']['version']
-install_path = "#{node['python']['prefix_dir']}/lib/python#{version.split(/(^\d+\.\d+)/)[1]}"
+version = node['vc-python']['version']
+install_path = "#{node['vc-python']['prefix_dir']}/lib/python#{version.split(/(^\d+\.\d+)/)[1]}"
 
 remote_file "#{Chef::Config[:file_cache_path]}/Python-#{version}.tar.bz2" do
-  source "#{node['python']['url']}/#{version}/Python-#{version}.tar.bz2"
-  checksum node['python']['checksum']
+  source "#{node['vc-python']['url']}/#{version}/Python-#{version}.tar.bz2"
+  checksum node['vc-python']['checksum']
   mode "0644"
   not_if { ::File.exists?(install_path) }
 end

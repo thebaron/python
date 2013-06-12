@@ -1,6 +1,8 @@
 Description
 ===========
 
+Venture Cranial forked version of this module that renames the cookbook.
+
 Installs and configures Python.  Also includes LWRPs for managing python packages with `pip` and `virtualenv` isolated Python environments.
 
 Requirements
