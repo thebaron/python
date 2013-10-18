@@ -22,7 +22,7 @@ require 'chef/mixin/shell_out'
 require 'chef/mixin/language'
 include Chef::Mixin::ShellOut
 
-# the logic in all action methods mirror that of 
+# the logic in all action methods mirror that of
 # the Chef::Provider::Package which will make
 # refactoring into core chef easy
 
@@ -33,7 +33,7 @@ action :install do
   if @new_resource.timeout
     timeout = @new_resource.timeout
   end
-  
+
   # support requirements file
   if @new_resource.requirements
     Chef::Log.info("Installing #{@new_resource} from #{@new_resource.requirements}")
@@ -107,19 +107,19 @@ def expand_options(options)
   options ? " #{options}" : ""
 end
 
-# these methods are the required overrides of 
-# a provider that extends from Chef::Provider::Package 
+# these methods are the required overrides of
+# a provider that extends from Chef::Provider::Package
 # so refactoring into core Chef should be easy
 
 def load_current_resource
   @current_resource = Chef::Resource::VcPythonPip.new(@new_resource.name)
   @current_resource.package_name(@new_resource.package_name)
   @current_resource.version(nil)
-  
+
   unless current_installed_version.nil?
     @current_resource.version(current_installed_version)
   end
-  
+
   @current_resource
 end
 
@@ -130,7 +130,7 @@ def current_installed_version
 
   @current_installed_version ||= begin
     delimeter = /==/
-    
+
     version_check_cmd = "#{expand_virtualenv(can_haz_virtualenv(@new_resource))}pip freeze | grep -i #{@new_resource.package_name}=="
     # incase you upgrade pip with pip!
     if @new_resource.package_name.eql?('pip')
@@ -139,20 +139,20 @@ def current_installed_version
     end
     p = shell_out!(version_check_cmd)
     p.stdout.split(delimeter)[1].strip
-  rescue Chef::Exceptions::ShellCommandFailed
+  rescue Chef::Exceptions::ShellCommandFailed, Mixlib::ShellOut::ShellCommandFailed
   end
 end
 
 def candidate_version
   @candidate_version ||= begin
     # `pip search` doesn't return versions yet
-    # `pip list` may be coming soon: 
+    # `pip list` may be coming soon:
     # https://bitbucket.org/ianb/pip/issue/197/option-to-show-what-version-would-be
     @new_resource.version||'latest'
   end
 end
 
-def install_from_requirements(requirements_file, timeout) 
+def install_from_requirements(requirements_file, timeout)
   shell_out!("#{expand_virtualenv(can_haz_virtualenv(@new_resource))}pip install -r #{requirements_file}", :timeout => timeout)
 end
 
